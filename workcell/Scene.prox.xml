@@ -1,0 +1,16 @@
+<CollisionSetup>
+    <Exclude>
+      <FramePair first="side_a1" second="side_b1"/>
+      <FramePair first="side_a1" second="side_b2"/>
+      <FramePair first="side_a2" second="side_b1"/>
+      <FramePair first="side_a2" second="side_b2"/>
+      <FramePair first="side_c1" second="side_a1"/>
+      <FramePair first="side_c1" second="side_a2"/>
+      <FramePair first="side_c1" second="side_b1"/>
+      <FramePair first="side_c1" second="side_b2"/>
+      <FramePair first="side_c2" second="side_a1"/>
+      <FramePair first="side_c2" second="side_a2"/>
+      <FramePair first="side_c2" second="side_b1"/>
+      <FramePair first="side_c2" second="side_b2"/>
+   </Exclude>
+</CollisionSetup>

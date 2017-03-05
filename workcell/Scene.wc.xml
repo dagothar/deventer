@@ -1,0 +1,139 @@
+<WorkCell name="Deventer">
+  
+  <!--cross -->
+	<!--Frame name="cross" refframe="WORLD" type="Movable">
+		<RPY>0 0 0</RPY>
+		<Pos>0.5 0.5 0.5</Pos>
+		<Drawable name="cross1">
+      <RPY>0 0 0</RPY>
+      <Pos>0 0 0</Pos>
+			<Polytope file="../models/beam" />
+		</Drawable>
+    <Drawable name="cross2">
+      <RPY>0 90 0</RPY>
+      <Pos>0 0 0</Pos>
+			<Polytope file="../models/beam" />
+		</Drawable>
+    <Drawable name="cross3">
+      <RPY>0 0 90</RPY>
+      <Pos>0 0 0</Pos>
+			<Polytope file="../models/beam" />
+		</Drawable>
+	</Frame-->
+  <SerialDevice name="cross">
+    <Frame name="Base">
+      <RPY>0 0 0</RPY>
+      <Pos>0.5 0.5 0.5</Pos>
+    </Frame>
+    
+    <Joint name="X" type="Prismatic">
+      <RPY>0 90 0</RPY>
+      <Pos>0 0 0</Pos>
+    </Joint>
+    
+    <Joint name="Y" type="Prismatic">
+      <RPY>0 0 -90</RPY>
+      <Pos>0 0 0</Pos>
+    </Joint>
+    
+    <Joint name="Z" type="Prismatic">
+      <RPY>0 -90 0</RPY>
+      <Pos>0 0 0</Pos>
+    </Joint>
+    
+    <PosLimit refjoint="X" min="-0.5" max="0.5"/>
+    <VelLimit refjoint="X" max="0.5"/>
+    <PosLimit refjoint="Y" min="-0.5" max="0.5"/>
+    <VelLimit refjoint="Y" max="0.5"/>
+    <PosLimit refjoint="Z" min="-0.5" max="0.5"/>
+    <VelLimit refjoint="Z" max="0.5"/>
+    
+    <Drawable name="cross1" refframe="Z">
+      <RPY>0 0 0</RPY>
+      <Pos>0 0 0</Pos>
+			<Polytope file="../models/beam1" />
+		</Drawable>
+    <Drawable name="cross2" refframe="Z">
+      <RPY>0 90 0</RPY>
+      <Pos>0 0 0</Pos>
+			<Polytope file="../models/beam1" />
+		</Drawable>
+    <Drawable name="cross3" refframe="Z">
+      <RPY>0 0 90</RPY>
+      <Pos>0 0 0</Pos>
+			<Polytope file="../models/beam1" />
+		</Drawable>
+  </SerialDevice>
+  
+  <!-- side A1 -->
+	<Frame name="side_a1" refframe="WORLD">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0</Pos>
+		<Drawable name="side_a1_geo">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0.0455</Pos>
+			<Polytope file="../models/side_a" />
+		</Drawable>
+	</Frame>
+  
+  <!-- side A2 -->
+	<Frame name="side_a2" refframe="WORLD">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0</Pos>
+		<Drawable name="side_a2_geo">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0.955</Pos>
+			<Polytope file="../models/side_a" />
+		</Drawable>
+	</Frame>
+ 
+	<!-- side B1 -->
+	<Frame name="side_b1" refframe="WORLD">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0</Pos>
+		<Drawable name="side_b1_geo">
+		<RPY>0 0 90</RPY>
+		<Pos>0 0.0455 0</Pos>
+			<Polytope file="../models/side_b" />
+		</Drawable>
+	</Frame>
+  
+  <!-- side B2 -->
+	<Frame name="side_b2" refframe="WORLD">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0</Pos>
+		<Drawable name="side_b2_geo">
+		<RPY>0 0 90</RPY>
+		<Pos>0 0.955 0</Pos>
+			<Polytope file="../models/side_b" />
+		</Drawable>
+	</Frame>
+  
+  <!-- side C1 -->
+	<Frame name="side_c1" refframe="WORLD">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0</Pos>
+		<Drawable name="side_c1_geo">
+		<RPY>90 0 90</RPY>
+		<Pos>0.0455 0 0</Pos>
+			<Polytope file="../models/side_c" />
+		</Drawable>
+	</Frame>
+  
+   <!-- side C2 -->
+	<Frame name="side_c2" refframe="WORLD">
+		<RPY>0 0 0</RPY>
+		<Pos>0 0 0</Pos>
+		<Drawable name="side_c2_geo">
+		<RPY>90 0 90</RPY>
+		<Pos>0.955 0 0</Pos>
+			<Polytope file="../models/side_c" />
+		</Drawable>
+	</Frame>
+	
+	<!-- collision setup -->
+	<CollisionSetup file ="Scene.prox.xml"/>
+	
+</WorkCell>
+
+
