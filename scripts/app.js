@@ -9,7 +9,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.axes = new axes.Axes(1.0, 0.01);
     this.grid = new grid.Grid(5.0, 1.0);
 
-    this.maze = new deventer.Deventer(5, 5, 5);
+    this.maze = new deventer.Deventer(3, 3, 3);
     this.lastPos = {x: 0, y: 0, z: 0};
   };
 
@@ -21,8 +21,8 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xcccccc, 0.002);
 
-    this.camera = new THREE.OrthographicCamera(-this.canvas.width/200, this.canvas.width/200, this.canvas.height/200, -this.canvas.height/200, -100, 100);
-    //this.camera = new THREE.PerspectiveCamera(45, this.canvas.width / this.canvas.height, 0.01, 1000);
+    // this.camera = new THREE.OrthographicCamera(-this.canvas.width/200, this.canvas.width/200, this.canvas.height/200, -this.canvas.height/200, -100, 100);
+    this.camera = new THREE.PerspectiveCamera(45, this.canvas.width / this.canvas.height, 0.01, 1000);
     this.camera.position.set(10, -10, 10);
     this.camera.up = new THREE.Vector3(0, 0, 1);
     this.camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -68,9 +68,9 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
 
   App.prototype.test = function() {
-    //this.maze = new deventer.Deventer(5, 5, 5);
-    //this.lastPos = {x: 0, y: 0, z: 0};
-    this.lastPos = this.maze.rebuild(this.lastPos, 1);
+    this.maze = new deventer.Deventer(15, 15, 15);
+    this.lastPos = {x: 0, y: 0, z: 0};
+    this.lastPos = this.maze.rebuild(this.lastPos, 1000);
 
     while (this.scene.children.length) {
      this.scene.remove(this.scene.children[0]);
