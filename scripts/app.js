@@ -1,4 +1,4 @@
-define(['jquery', 'deventer', 'threejs', 'axes', 'grid'], function($, deventer, THREE, axes, grid) {
+define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, deventer, THREE, orbit, axes, grid) {
 
   const CONFIG = {
 
@@ -6,10 +6,16 @@ define(['jquery', 'deventer', 'threejs', 'axes', 'grid'], function($, deventer, 
 
 
   function App() {
+    this.axes = new axes.Axes(1.0, 0.01);
+    this.grid = new grid.Grid(2.0, 0.25);
+
+    this.maze = new deventer.Deventer(10, 10, 10);
   };
 
 
   App.prototype._initialize = function() {
+    var self = this;
+
     this.canvas = $('#view').get(0);
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xcccccc, 0.002);
@@ -23,8 +29,11 @@ define(['jquery', 'deventer', 'threejs', 'axes', 'grid'], function($, deventer, 
     this.renderer.setSize(this.canvas.width, this.canvas.height);
     this.renderer.setClearColor(0xffffff);
 
-    this.axes = new axes.Axes(1.0, 0.01);
-    this.grid = new grid.Grid(2.0, 0.25);
+    this.controls = new THREE.OrbitControls(this.camera, this.canvas);
+    this.controls.addEventListener('change', function() { self._update(); });
+    this.controls.zoom0 = 1.5;
+    this.controls.reset();
+    this.controls.enablePan = false;
   };
 
 
@@ -40,6 +49,7 @@ define(['jquery', 'deventer', 'threejs', 'axes', 'grid'], function($, deventer, 
       this.scene.remove(this.scene.children[0]);
     }
 
+    this.maze.render(this.scene, this.renderer);
     this.axes.render(this.scene, this.renderer);
     this.grid.render(this.scene, this.renderer);
 

@@ -102,7 +102,7 @@ define(['array3d', 'threejs'], function(array3d, threejs) {
   };
 
 
-  Deventer.prototype.render = function() {
+  Deventer.prototype.render = function(scene, renderer) {
 
   };
 
