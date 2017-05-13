@@ -9,6 +9,11 @@ define(['jquery', 'deventer'], function($, deventer) {
   };
 
 
+  App.prototype._bindUIActions = function() {
+
+  };
+
+
   App.prototype.run = function() {
   };
 
