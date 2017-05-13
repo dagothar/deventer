@@ -7,10 +7,10 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
   function App() {
     this.axes = new axes.Axes(1.0, 0.01);
-    this.grid = new grid.Grid(2.0, 0.25);
+    this.grid = new grid.Grid(5.0, 1.0);
 
     this.maze = new deventer.Deventer(5, 5, 5);
-    this.maze.rebuild();
+    this.lastPos = {x: 0, y: 0, z: 0};
   };
 
 
@@ -43,6 +43,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
   App.prototype._bindUIActions = function() {
     var self = this;
 
+    $('.button-generate').click(function() { self.test() });
   };
 
 
@@ -53,14 +54,31 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
   App.prototype.run = function() {
     this._initialize();
+    this._bindUIActions();
     //while (this.scene.children.length)
     //{
     //  this.scene.remove(this.scene.children[0]);
     //}
 
     this.maze.render(this.scene, this.renderer);
-    this.axes.render(this.scene, this.renderer);
-    this.grid.render(this.scene, this.renderer);
+    //this.axes.render(this.scene, this.renderer);
+    //this.grid.render(this.scene, this.renderer);
+    this._update();
+  };
+
+
+  App.prototype.test = function() {
+    //this.maze = new deventer.Deventer(5, 5, 5);
+    //this.lastPos = {x: 0, y: 0, z: 0};
+    this.lastPos = this.maze.rebuild(this.lastPos, 1);
+
+    while (this.scene.children.length) {
+     this.scene.remove(this.scene.children[0]);
+    }
+
+    this.maze.render(this.scene, this.renderer);
+    //this.axes.render(this.scene, this.renderer);
+    //this.grid.render(this.scene, this.renderer);
     this._update();
   };
 
