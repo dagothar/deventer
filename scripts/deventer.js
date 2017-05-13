@@ -44,7 +44,7 @@ define(['array3d', 'threejs'], function(array3d, threejs) {
     var currentCell = this.maze.get(currentPosition.x, currentPosition.y, currentPosition.z);
     currentCell.visited = true;
 
-    while (...?) {
+    while (1) {
       var neighbours = this.findNeighbours(currentPosition);
 
       if (neighbours.length > 0) {
