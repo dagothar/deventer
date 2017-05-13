@@ -55,11 +55,28 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
         /* connect 3d cells */
         nextCell.parent = currentPosition;
         currentCell.connections.push(nextPosition);
-        nextCell.connections.push(currentPosition);
+        //nextCell.connections.push(currentPosition);
         nextCell.visited = true;
 
         /* connect 2d cells */
-        /* ... */
+        var currxcell = this.xmaze.get(currentPosition.y, currentPosition.z, 0);
+        var nextxcell = this.xmaze.get(nextPosition.y, nextPosition.z, 0);
+        currxcell.connections.push({ x: nextPosition.y, y: nextPosition.z, z: 0 });
+        nextxcell.connections.push({ x: currentPosition.y, y: currentPosition.z, z: 0 });
+        currxcell.visited = true;
+        nextxcell.visited = true;
+        var currycell = this.ymaze.get(currentPosition.x, currentPosition.z, 0);
+        var nextycell = this.ymaze.get(nextPosition.x, nextPosition.z, 0);
+        currycell.connections.push({ x: nextPosition.x, y: nextPosition.z, z: 0 });
+        nextycell.connections.push({ x: currentPosition.x, y: currentPosition.z, z: 0 });
+        currycell.visited = true;
+        nextycell.visited = true;
+        var currzcell = this.zmaze.get(currentPosition.x, currentPosition.y, 0);
+        var nextzcell = this.zmaze.get(nextPosition.x, nextPosition.y, 0);
+        currzcell.connections.push({ x: nextPosition.x, y: nextPosition.y, z: 0 });
+        nextzcell.connections.push({ x: currentPosition.x, y: currentPosition.y, z: 0 });
+        currzcell.visited = true;
+        nextzcell.visited = true;
 
         currentPosition = nextPosition;
         currentCell = nextCell;
@@ -73,6 +90,19 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
       }
     }
 
+  };
+
+
+  Deventer.prototype.connected = function(maze, pos1, pos2) {
+    var connected = false;
+
+    var cell = maze.get(pos1.x, pos1.y, pos1.z);
+    for (var i = 0, n = cell.connections.length; i < n; ++i) {
+      var conn = cell.connections[i];
+      if (conn.x == pos2.x && conn.y == pos2.y && conn.z == pos2.z) return true;
+    }
+
+    return connected;
   };
 
 
@@ -96,7 +126,9 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
 
       /* check if visited and if already connected on the sides */
       if (this.maze.get(candidate.x, candidate.y, candidate.z).visited) continue;
-      /* ... */
+      if (this.xmaze.get(candidate.y, candidate.z, 0).visited && !this.connected(this.xmaze, {x: position.y, y: position.z, z: 0}, {x: candidate.y, y: candidate.z, z: 0})) continue;
+      if (this.ymaze.get(candidate.x, candidate.z, 0).visited && !this.connected(this.ymaze, {x: position.x, y: position.z, z: 0}, {x: candidate.x, y: candidate.z, z: 0})) continue;
+      //if (this.zmaze.get(candidate.x, candidate.y, 0).visited && !this.connected(this.zmaze, {x: position.x, y: position.y, z: 0}, {x: candidate.x, y: candidate.y, z: 0})) continue;
 
       neighbours.push(candidate);
     }
