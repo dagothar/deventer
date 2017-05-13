@@ -1,4 +1,4 @@
-define(['array3d', 'threejs'], function(array3d, threejs) {
+define(['array3d', 'threejs'], function(array3d, THREE) {
 
   const NEIGHBOURHOOD = [
     { x: -1, y:  0, z:  0 },
@@ -21,7 +21,7 @@ define(['array3d', 'threejs'], function(array3d, threejs) {
   var makeMaze = function(width, height, depth) {
     var maze = new array3d.Array3d(width, height, depth);
     maze.forEach(function(cell, x, y, z) {
-      cell = new Cell({ x: x, y: y, z: z });
+      return new Cell({ x: x, y: y, z: z });
     });
     return maze;
   };
@@ -41,16 +41,16 @@ define(['array3d', 'threejs'], function(array3d, threejs) {
 
   Deventer.prototype.rebuild = function(startPosition) {
     var currentPosition = startPosition || { x: 0, y: 0, z: 0 };
-    var currentCell = this.maze.get(currentPosition.x, currentPosition.y, currentPosition.z);
-    currentCell.visited = true;
 
     while (1) {
+      var currentCell = this.maze.get(currentPosition.x, currentPosition.y, currentPosition.z);
+      currentCell.visited = true;
       var neighbours = this.findNeighbours(currentPosition);
 
       if (neighbours.length > 0) {
         /* pick random neighbour */
         var nextPosition = neighbours[Math.floor(neighbours.length * Math.random())];
-        var nextCell = this.maze.get(currentPosition.x, currentPosition.y, currentPosition.z);
+        var nextCell = this.maze.get(nextPosition.x, nextPosition.y, nextPosition.z);
 
         /* connect 3d cells */
         nextCell.parent = currentPosition;
@@ -60,6 +60,9 @@ define(['array3d', 'threejs'], function(array3d, threejs) {
 
         /* connect 2d cells */
         /* ... */
+
+        currentPosition = nextPosition;
+        currentCell = nextCell;
       } else {
         if (currentCell.parent === null) {
           break; // todo
@@ -102,7 +105,28 @@ define(['array3d', 'threejs'], function(array3d, threejs) {
   };
 
 
-  Deventer.prototype.render = function(scene, renderer) {
+  Deventer.prototype.render = function(scene, renderer, scale) {
+    var dx = this.width / 2;
+    var dy = this.height / 2;
+    var dz = this.depth / 2;
+    var scale = scale || 0.1;
+
+    var material = new THREE.LineBasicMaterial({ color: '#333333', linewidth: 1 });
+
+    for (var x = 0; x < this.width; ++x)
+      for (var y = 0; y < this.height; ++y)
+        for (var z = 0; z < this.depth; ++z) {
+          var cell = this.maze.get(x, y, z);
+          for (var i = 0; i < cell.connections.length; ++i) {
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(scale*(cell.position.x-dx), scale*(cell.position.y-dy), scale*(cell.position.z-dz)));
+            geometry.vertices.push(new THREE.Vector3(scale*(cell.connections[i].x-dx), scale*(cell.connections[i].y-dy), scale*(cell.connections[i].z-dz)));
+            var line = new THREE.Line(geometry, material);
+            line.name = "maze";
+            scene.add(line);
+          }
+        }
+
 
   };
 

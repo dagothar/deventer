@@ -10,6 +10,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.grid = new grid.Grid(2.0, 0.25);
 
     this.maze = new deventer.Deventer(10, 10, 10);
+    this.maze.rebuild();
   };
 
 
@@ -20,8 +21,9 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xcccccc, 0.002);
 
-    this.camera = new THREE.OrthographicCamera(-this.canvas.width/200, this.canvas.width/200, this.canvas.height/200, -this.canvas.height/200, -10, 10);
-    this.camera.position.set(1, -1, 1);
+    //this.camera = new THREE.OrthographicCamera(-this.canvas.width/200, this.canvas.width/200, this.canvas.height/200, -this.canvas.height/200, -100, 100);
+    this.camera = new THREE.PerspectiveCamera(45, this.canvas.width / this.canvas.height, 0.01, 1000);
+    this.camera.position.set(10, -10, 10);
     this.camera.up = new THREE.Vector3(0, 0, 1);
     this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -31,7 +33,8 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
     this.controls = new THREE.OrbitControls(this.camera, this.canvas);
     this.controls.addEventListener('change', function() { self._update(); });
-    this.controls.zoom0 = 1.5;
+    this.controls.zoom0 = 1;
+    this.controls.position0 = new THREE.Vector3(5, -5, 5);
     this.controls.reset();
     this.controls.enablePan = false;
   };
@@ -44,21 +47,20 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
 
   App.prototype._update = function() {
-    while (this.scene.children.length)
-    {
-      this.scene.remove(this.scene.children[0]);
-    }
-
-    this.maze.render(this.scene, this.renderer);
-    this.axes.render(this.scene, this.renderer);
-    this.grid.render(this.scene, this.renderer);
-
     this.renderer.render(this.scene, this.camera);
   };
 
 
   App.prototype.run = function() {
     this._initialize();
+    //while (this.scene.children.length)
+    //{
+    //  this.scene.remove(this.scene.children[0]);
+    //}
+
+    this.maze.render(this.scene, this.renderer);
+    this.axes.render(this.scene, this.renderer);
+    this.grid.render(this.scene, this.renderer);
     this._update();
   };
 

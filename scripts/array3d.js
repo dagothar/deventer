@@ -68,7 +68,7 @@ define([], function() {
 		for (var x = 0; x < this.width; ++x) {
 			for (var y = 0; y < this.height; ++y) {
 				for (var z = 0; z < this.depth; ++z) {
-					fun(this.cells[x][y][z], x, y, z);
+					this.cells[x][y][z] = fun(this.cells[x][y][z], x, y, z);
 				}
 			}
 		}
