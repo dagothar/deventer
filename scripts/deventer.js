@@ -169,6 +169,11 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
       var conn = cell.connections[i];
       if (positionEqual(pos2, conn)) return true;
     }
+    cell = maze.get(pos2.x, pos2.y, pos2.z);
+    for (var i = 0, n = cell.connections.length; i < n; ++i) {
+      var conn = cell.connections[i];
+      if (positionEqual(pos1, conn)) return true;
+    }
 
     return false;
   };
