@@ -11,10 +11,11 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     FOG_COLOR: 0xcccccc,
     FOG_DENSITY: 0.02,
     BG_COLOR: 0xffffff,
-    GENERATE_ID: '#generate',
+    GENERATE_ID: '#button-generate',
     WIDTH_ID: '#width',
     HEIGHT_ID: '#height',
     DEPTH_ID: '#depth',
+    ANIMATE_ID: '#button-animate',
   };
 
 
@@ -24,6 +25,10 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.depth = CONFIG.START_DEPTH;
     this.maze = new deventer.Deventer(this.width, this.height, this.depth);
     this.lastPos = {x: CONFIG.START_X, y: CONFIG.START_Y, z: CONFIG.START_Z};
+
+    this.animate = false;
+    this.animateInt = undefined;
+    this.speed = 10;
   };
 
 
@@ -57,6 +62,10 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     var self = this;
 
     $(CONFIG.GENERATE_ID).click(function() { self._generateMaze(); });
+    $(CONFIG.ANIMATE_ID).click(function() {
+      self.animate ^= true;
+      $(this).text('Animate: ' + (self.animate ? 'ON' : 'OFF'));
+    });
     $(CONFIG.WIDTH_ID).on('input change', function() { self.width = $(this).val(); });
     $(CONFIG.HEIGHT_ID).on('input change', function() { self.height = $(this).val(); });
     $(CONFIG.DEPTH_ID).on('input change', function() { self.depth = $(this).val(); });
@@ -64,12 +73,9 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
 
   App.prototype._update = function() {
-    while (this.scene.children.length) {
-     this.scene.remove(this.scene.children[0]);
-    }
-
-    var maxDim = this.maze.width > this.maze.height ? (this.maze.width > this.maze.depth ? this.maze.width : this.maze.depth) : (this.maze.height > this.maze.depth ? this.maze.height : this.maze.depth);
+    var maxDim = this.width > this.height ? (this.width > this.depth ? this.width : this.depth) : (this.height > this.depth ? this.height : this.depth);
     var scale = 10.0 / maxDim;
+
     this.maze.render(this.scene, this.renderer, scale);
     this._render();
   };
@@ -88,11 +94,36 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
   };
 
 
-  App.prototype._generateMaze = function() {
-    this.maze = new deventer.Deventer(this.width, this.height, this.depth);
-    this.lastPos = {x: 0, y: 0, z: 0};
-    this.lastPos = this.maze.rebuild(this.lastPos);
+  App.prototype._generateStep = function() {
+    this.lastPos = this.maze.rebuild(this.lastPos, 1);
+    if (this.lastPos == null) {
+      clearInterval(this.animateInt);
+      this._update();
+      return;
+    }
     this._update();
+  };
+
+
+  App.prototype._generateMaze = function() {
+    while (this.scene.children.length) {
+     this.scene.remove(this.scene.children[0]);
+    }
+
+    var self = this;
+    clearInterval(this._moveModeInt);
+
+    this.maze = new deventer.Deventer(this.width, this.height, this.depth);
+
+    if (!this.animate) {
+      this.maze.rebuild();
+      this._update();
+    } else {
+      clearInterval(this.animateInt);
+      this.lastPos = undefined;
+      this.animateInt = setInterval(function() { self._generateStep(); }, this.speed);
+    }
+
   };
 
 

@@ -40,12 +40,12 @@
 
             <!-- new maze button -->
             <div class="form-group col-md-6">
-              <button type="button" id="generate" class="btn btn-default btn-block">New maze <span class="glyphicon glyphicon-pencil"></span></button>
+              <button type="button" id="button-generate" class="btn btn-default btn-block">New maze <span class="glyphicon glyphicon-pencil"></span></button>
             </div>
 
             <!-- animate switch button -->
             <div class="form-group col-md-6">
-              <button type="button" class="button-animate btn btn-default btn-block">Animate <span class="animate">OFF</span></button>
+              <button type="button" id="button-animate" class="btn btn-default btn-block">Animate OFF</button>
             </div>
 
             <!-- maze dimensions -->
@@ -64,6 +64,15 @@
 
           </div>
         </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">Info</div>
+          <div class="panel-body">
+            <p>Are all corners connected? <span class="connected pull-right">No</span></p>
+            <p>Unconnected components: <span class="components text-info pull-right">1</span></p>
+          </div>
+        </div>
+
       </div>
 
     </div>

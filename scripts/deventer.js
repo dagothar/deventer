@@ -27,6 +27,14 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
   };
 
 
+  function Connection(position) {
+    this.x = position.x;
+    this.y = position.y;
+    this.z = position.z;
+    this.drawn = false;
+  };
+
+
   function Deventer(width, height, depth) {
     this.width = width;
     this.height = height;
@@ -76,31 +84,29 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
 
         /* connect 2d cells */
         var nextCellX = this.xmaze.get(0, nextPosition.y, nextPosition.z);
-        currentCellX.connections.push({ x: 0, y: nextPosition.y, z: nextPosition.z });
-        currentCellX.connections.push({ x: 0, y: currentPosition.y, z: currentPosition.z });
-        nextCellX.connections.push({ x: 0, y: currentPosition.y, z: currentPosition.z });
+        currentCellX.connections.push(new Connection({ x: 0, y: nextPosition.y, z: nextPosition.z }));
+        currentCellX.connections.push(new Connection({ x: 0, y: currentPosition.y, z: currentPosition.z }));
+        nextCellX.connections.push(new Connection({ x: 0, y: currentPosition.y, z: currentPosition.z }));
 
         var nextCellY = this.ymaze.get(nextPosition.x, 0, nextPosition.z);
-        currentCellY.connections.push({ x: nextPosition.x, y: 0, z: nextPosition.z });
-        currentCellY.connections.push({ x: currentPosition.x, y: 0, z: currentPosition.z });
-        nextCellY.connections.push({ x: currentPosition.x, y: 0, z: currentPosition.z });
+        currentCellY.connections.push(new Connection({ x: nextPosition.x, y: 0, z: nextPosition.z }));
+        currentCellY.connections.push(new Connection({ x: currentPosition.x, y: 0, z: currentPosition.z }));
+        nextCellY.connections.push(new Connection({ x: currentPosition.x, y: 0, z: currentPosition.z }));
 
         var nextCellZ = this.zmaze.get(nextPosition.x, nextPosition.y, 0);
-        currentCellZ.connections.push({ x: nextPosition.x, y: nextPosition.y, z: 0 });
-        currentCellZ.connections.push({ x: currentPosition.x, y: currentPosition.y, z: 0 });
-        nextCellZ.connections.push({ x: currentPosition.x, y: currentPosition.y, z: 0 });
+        currentCellZ.connections.push(new Connection({ x: nextPosition.x, y: nextPosition.y, z: 0 }));
+        currentCellZ.connections.push(new Connection({ x: currentPosition.x, y: currentPosition.y, z: 0 }));
+        nextCellZ.connections.push(new Connection({ x: currentPosition.x, y: currentPosition.y, z: 0 }));
 
         currentPosition = nextPosition;
         currentCell = nextCell;
       } else {
         if (currentCell.parent === null) {
-          if (this.unvisited > 0) {
-            console.log(this.unvisited);
-            currentPosition = this.findUnvisited();
-            console.log(currentPosition);
-            if (currentPosition === null) break;
+          var unvisited = this.findUnvisited();
+          if (unvisited) {
+            currentPosition = unvisited;
             this.unconnected++;
-          } else break;
+          } else return null;
         } else {
           currentPosition = currentCell.parent;
         }
@@ -195,12 +201,15 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
         for (var z = 0; z < maze.depth; ++z) {
           var cell = maze.get(x, y, z);
           for (var i = 0; i < cell.connections.length; ++i) {
+            var connection = cell.connections[i];
+            if (connection.drawn) continue;
             var geometry = new THREE.Geometry();
             geometry.vertices.push(new THREE.Vector3(scale*(cell.position.x+0.5)+px, scale*(cell.position.y+0.5)+py, scale*(cell.position.z+0.5)+pz));
-            geometry.vertices.push(new THREE.Vector3(scale*(cell.connections[i].x+0.5)+px, scale*(cell.connections[i].y+0.5)+py, scale*(cell.connections[i].z+0.5)+pz));
+            geometry.vertices.push(new THREE.Vector3(scale*(connection.x+0.5)+px, scale*(connection.y+0.5)+py, scale*(connection.z+0.5)+pz));
             var line = new THREE.Line(geometry, material);
             line.name = "maze";
             scene.add(line);
+            connection.drawn = true;
           }
         }
       }
@@ -215,7 +224,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     var scale = scale || 1.0;
     var sideOffset = 6.0 || sideOffset;
 
-    this.renderMaze(scene, this.maze, -dx, -dy, -dz, scale, '#dddddd');
+    this.renderMaze(scene, this.maze, -dx, -dy, -dz, scale, '#f0f0f0');
     this.renderMaze(scene, this.xmaze, -sideOffset, -dy, -dz, scale, '#ff0000', 2);
     this.renderMaze(scene, this.ymaze, -dx, -sideOffset, -dz, scale, '#00ff00', 2);
     this.renderMaze(scene, this.zmaze, -dx, -dy, -sideOffset, scale, '#0000ff', 2);
