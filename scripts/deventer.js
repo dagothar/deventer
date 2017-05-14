@@ -32,7 +32,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     this.height = height;
     this.depth = depth;
 
-    this.maze = makeMaze(width, depth, height);
+    this.maze = makeMaze(width, height, depth);
     this.xmaze = makeMaze(1, height, depth);
     this.ymaze = makeMaze(width, 1, depth);
     this.zmaze = makeMaze(width, height, 1);
@@ -40,8 +40,12 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
 
 
   Deventer.prototype.rebuild = function(startPosition, steps) {
-    var currentPosition = startPosition || { x: 0, y: 0, z: 0 };
-    var steps = steps || 9999999;
+    var currentPosition = startPosition || {
+      x: Math.floor(this.width*Math.random()),
+      y: Math.floor(this.height*Math.random()),
+      z: Math.floor(this.depth*Math.random())
+    };
+    var steps = steps || Number.MAX_SAFE_INTEGER;
 
     while (steps > 0) {
       var currentCell = this.maze.get(currentPosition.x, currentPosition.y, currentPosition.z);
@@ -59,8 +63,6 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
         /* pick random neighbour */
         var nextPosition = neighbours[Math.floor(neighbours.length * Math.random())];
         var nextCell = this.maze.get(nextPosition.x, nextPosition.y, nextPosition.z);
-
-        //console.log(currentPosition, nextPosition, neighbours);
 
         /* connect 3d cells */
         nextCell.parent = currentPosition;
@@ -131,27 +133,21 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
         || candidate.z < 0 || candidate.z >= this.depth
       ) continue;
 
-      //console.log('Trying', candidate);
-
       /* check if visited and if already connected on the sides */
-      if (this.maze.get(candidate.x, candidate.y, candidate.z).visited) {
-        //console.log('visited');
-        continue;
-      }
-      if (this.xmaze.get(0, candidate.y, candidate.z).visited && !this.connected(this.xmaze, {x: 0, y: position.y, z: position.z}, {x: 0, y: candidate.y, z: candidate.z})) {
-        //console.log('xmaze', this.xmaze.get(0, candidate.y, candidate.z).visited, this.connected(this.xmaze, {x: 0, y: position.y, z: position.z}, {x: 0, y: candidate.y, z: candidate.z}))
-        continue;
-      }
-      if (this.ymaze.get(candidate.x, 0, candidate.z).visited && !this.connected(this.ymaze, {x: position.x, y: 0, z: position.z}, {x: candidate.x, y: 0, z: candidate.z})) {
-        //console.log('ymaze', this.ymaze.get(candidate.x, 0, candidate.z).visited, this.connected(this.ymaze, {x: position.x, y: 0, z: position.z}, {x: candidate.x, y: 0, z: candidate.z}));
-        continue;
-      }
-      if (this.zmaze.get(candidate.x, candidate.y, 0).visited && !this.connected(this.zmaze, {x: position.x, y: position.y, z: 0}, {x: candidate.x, y: candidate.y, z: 0})) {
-        //console.log('zmaze', this.zmaze.get(candidate.x, candidate.y, 0).visited, this.connected(this.zmaze, {x: position.x, y: position.y, z: 0}, {x: candidate.x, y: candidate.y, z: 0}));
-        continue;
-      }
+      if (this.maze.get(candidate.x, candidate.y, candidate.z).visited) continue;
+      if (
+        this.xmaze.get(0, candidate.y, candidate.z).visited
+        && !this.connected(this.xmaze, {x: 0, y: position.y, z: position.z}, {x: 0, y: candidate.y, z: candidate.z})
+      ) continue;
+      if (
+        this.ymaze.get(candidate.x, 0, candidate.z).visited
+        && !this.connected(this.ymaze, {x: position.x, y: 0, z: position.z}, {x: candidate.x, y: 0, z: candidate.z})
+      ) continue;
+      if (
+        this.zmaze.get(candidate.x, candidate.y, 0).visited
+        && !this.connected(this.zmaze, {x: position.x, y: position.y, z: 0}, {x: candidate.x, y: candidate.y, z: 0})
+      ) continue;
 
-      //console.log('pass');
       neighbours.push(candidate);
     }
 
@@ -166,6 +162,8 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     var scale = scale || 1.0;
     var color = color || '#000000';
     var weight = weight || 1;
+
+    console.log(color);
 
     var material = new THREE.LineBasicMaterial({ color: color, linewidth: weight });
 
@@ -187,16 +185,17 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
   };
 
 
-  Deventer.prototype.render = function(scene, renderer, scale) {
-    var dx = this.width / 2.0;
-    var dy = this.height / 2.0;
-    var dz = this.depth / 2.0;
+  Deventer.prototype.render = function(scene, renderer, scale, sideOffset) {
+    var dx = scale*(this.width / 2.0);
+    var dy = scale*(this.height / 2.0);
+    var dz = scale*(this.depth / 2.0);
     var scale = scale || 1.0;
+    var sideOffset = 6.0 || sideOffset;
 
     this.renderMaze(scene, this.maze, -dx, -dy, -dz, scale, '#dddddd');
-    this.renderMaze(scene, this.xmaze, -dx-scale, -dy, -dz, scale, '#ff0000', 2);
-    this.renderMaze(scene, this.ymaze, -dx, -dy-scale, -dz, scale, '#00ff00', 2);
-    this.renderMaze(scene, this.zmaze, -dx, -dy, -dz-scale, scale, '#0000ff', 2);
+    this.renderMaze(scene, this.xmaze, -sideOffset, -dy, -dz, scale, '#ff0000', 2);
+    this.renderMaze(scene, this.ymaze, -dx, -sideOffset, -dz, scale, '#00ff00', 2);
+    this.renderMaze(scene, this.zmaze, -dx, -dy, -sideOffset, scale, '#0000ff', 2);
   };
 
 

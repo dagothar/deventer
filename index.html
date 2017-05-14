@@ -40,7 +40,26 @@
 
             <!-- new maze button -->
             <div class="form-group col-md-6">
-              <button type="button" class="button-generate btn btn-default btn-block">New maze <span class="glyphicon glyphicon-pencil"></span></button>
+              <button type="button" id="generate" class="btn btn-default btn-block">New maze <span class="glyphicon glyphicon-pencil"></span></button>
+            </div>
+
+            <!-- animate switch button -->
+            <div class="form-group col-md-6">
+              <button type="button" class="button-animate btn btn-default btn-block">Animate <span class="animate">OFF</span></button>
+            </div>
+
+            <!-- maze dimensions -->
+            <div class="form-group col-md-4">
+              <label>width: </label>
+              <input type="number" id="width" value="10"/>
+            </div>
+            <div class="form-group col-md-4">
+              <label>height: </label>
+              <input type="number" id="height" value="10"/>
+            </div>
+            <div class="form-group col-md-4">
+              <label>depth: </label>
+              <input type="number" id="depth" value="10"/>
             </div>
 
           </div>
