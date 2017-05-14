@@ -19,6 +19,10 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     SPEED_ID: '.speed',
     SPEED_SLIDER_ID: '#slider-speed',
     CURSOR_RADIUS: 0.075,
+    CURSOR_LENGTH: 20.0,
+    CURSOR_X_ID: '#cursor-x',
+    CURSOR_Y_ID: '#cursor-y',
+    CURSOR_Z_ID: '#cursor-z',
   };
 
 
@@ -94,7 +98,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     });
     $(CONFIG.DEPTH_ID).on('input change', function() {
       var depth = $(this).val();
-      if (depth > 0) self.depth = depth; $(this).val(1);
+      if (depth > 0) self.depth = depth; else $(this).val(1);
     });
     $(CONFIG.SPEED_ID).text(this.speed.toFixed(1) + ' [ms]');
     $(CONFIG.SPEED_SLIDER_ID).on('input change', function() {
@@ -151,6 +155,21 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
       }
       self._update();
     });
+    $(CONFIG.CURSOR_X_ID).on('input change', function() {
+      var x = $(this).val();
+      if (x >= 0 && x < self.maze.width) self.cursorPosition.x = x;
+      self._update();
+    });
+    $(CONFIG.CURSOR_Y_ID).on('input change', function() {
+      var y = $(this).val();
+      if (y >= 0 && y < self.maze.height) self.cursorPosition.y = y;
+      self._update();
+    });
+    $(CONFIG.CURSOR_Z_ID).on('input change', function() {
+      var z = $(this).val();
+      if (z >= 0 && z < self.maze.depth) self.cursorPosition.z = z;
+      self._update();
+    });
   };
 
 
@@ -166,6 +185,10 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     $('.components').text(this.maze.unconnected);
     $('.largest').text(this.maze.largest + ' / ' + this.maze.ncells);
     $('.links').text(this.maze.links + ' / ' + this.maze.ncells);
+
+    $(CONFIG.CURSOR_X_ID).val(this.cursorPosition.x);
+    $(CONFIG.CURSOR_Y_ID).val(this.cursorPosition.y);
+    $(CONFIG.CURSOR_Z_ID).val(this.cursorPosition.z);
   };
 
 
@@ -236,14 +259,14 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
   App.prototype._updateCursor = function() {
     if (this.cursor == null) {
       var geometry = new THREE.Geometry();
-      var geo1 = new THREE.CylinderGeometry(CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_RADIUS, 21.0, 32);
+      var geo1 = new THREE.CylinderGeometry(CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_LENGTH, 32);
       var mesh1 = new THREE.Mesh(geo1);
       mesh1.updateMatrix();
-      var geo2 = new THREE.CylinderGeometry(CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_RADIUS, 21.0, 32);
+      var geo2 = new THREE.CylinderGeometry(CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_LENGTH, 32);
       var mesh2 = new THREE.Mesh(geo2);
       mesh2.rotation.x = THREE.Math.degToRad(90);
       mesh2.updateMatrix();
-      var geo3 = new THREE.CylinderGeometry(CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_RADIUS, 21.0, 32);
+      var geo3 = new THREE.CylinderGeometry(CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_RADIUS, CONFIG.CURSOR_LENGTH, 32);
       var mesh3 = new THREE.Mesh(geo3);
       mesh3.rotation.z = THREE.Math.degToRad(90);
       mesh3.updateMatrix();
@@ -277,9 +300,9 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     var maxDim = this.maze.width > this.maze.height ? (this.maze.width > this.maze.depth ? this.maze.width : this.maze.depth) : (this.maze.height > this.maze.depth ? this.maze.height : this.maze.depth);
     var scale = 10.0 / maxDim;
     this.cursor.position.set(scale*(this.cursorPosition.x-this.maze.width/2+0.5), scale*(this.cursorPosition.y-this.maze.height/2+0.5), scale*(this.cursorPosition.z-this.maze.depth/2+0.5));
-    this.xcursor.position.set(-5.5, scale*(this.cursorPosition.y-this.maze.height/2+0.5), scale*(this.cursorPosition.z-this.maze.depth/2+0.5));
-    this.ycursor.position.set(scale*(this.cursorPosition.x-this.maze.width/2+0.5), -5.5, scale*(this.cursorPosition.z-this.maze.depth/2+0.5));
-    this.zcursor.position.set(scale*(this.cursorPosition.x-this.maze.width/2+0.5), scale*(this.cursorPosition.y-this.maze.height/2+0.5), -5.5);
+    this.xcursor.position.set(scale*0.5-6, scale*(this.cursorPosition.y-this.maze.height/2+0.5), scale*(this.cursorPosition.z-this.maze.depth/2+0.5));
+    this.ycursor.position.set(scale*(this.cursorPosition.x-this.maze.width/2+0.5), scale*0.5-6, scale*(this.cursorPosition.z-this.maze.depth/2+0.5));
+    this.zcursor.position.set(scale*(this.cursorPosition.x-this.maze.width/2+0.5), scale*(this.cursorPosition.y-this.maze.height/2+0.5), scale*0.5-6);
   };
 
 
