@@ -58,6 +58,8 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     this.xmaze = makeMaze(1, height, depth);
     this.ymaze = makeMaze(width, 1, depth);
     this.zmaze = makeMaze(width, height, 1);
+
+    this.startPosition = null;
   };
 
 
@@ -68,6 +70,8 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
       z: Math.floor(this.depth*Math.random())
     };
     var steps = steps || Number.MAX_SAFE_INTEGER;
+
+    if (this.startPosition == null) this.startPosition = currentPosition;
 
     while (steps > 0) {
       var currentCell = this.maze.get(currentPosition.x, currentPosition.y, currentPosition.z);
