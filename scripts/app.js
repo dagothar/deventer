@@ -58,7 +58,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.controls = new THREE.OrbitControls(this.camera, this.canvas);
     this.controls.addEventListener('change', function() { self._render(); });
     this.controls.zoom0 = 1;
-    this.controls.position0 = new THREE.Vector3(15, -15, 15);
+    this.controls.position0 = new THREE.Vector3(-15, -15, -15);
     this.controls.reset();
     this.controls.enablePan = false;
   };
@@ -100,6 +100,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.maze.render(this.scene, this.renderer, scale);
     this._render();
 
+    $('.connected').text(this.maze.allCorners ? 'YES' : 'NO');
     $('.components').text(this.maze.unconnected);
     $('.largest').text(this.maze.largest + ' / ' + this.maze.ncells);
     $('.links').text(this.maze.links + ' / ' + this.maze.ncells);
@@ -120,7 +121,6 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
 
   App.prototype._generateStep = function() {
-    console.log(this.generateSteps);
     this.lastPos = this.maze.rebuild(this.lastPos, this.generateSteps);
     if (this.lastPos == null) {
       clearInterval(this.animateInt);

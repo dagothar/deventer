@@ -50,6 +50,8 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     this.unconnected = 1;
     this.links = 0;
     this.largest = 0;
+    this.corners = 0;
+    this.allCorners = false;
 
     this.maze = makeMaze(width, height, depth);
     this.xmaze = makeMaze(1, height, depth);
@@ -73,6 +75,18 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
       var currentCellZ = this.zmaze.get(currentPosition.x, currentPosition.y, 0);
 
       var neighbours = this.findNeighbours(currentPosition);
+
+      /* check if it is a corner */
+      if (!currentCell.visited && positionEqual(currentPosition, {x: 0, y: 0, z: 0})) ++this.corners;
+      if (!currentCell.visited && positionEqual(currentPosition, {x: this.width-1, y: 0, z: 0})) ++this.corners;
+      if (!currentCell.visited && positionEqual(currentPosition, {x: 0, y: this.height-1, z: 0})) ++this.corners;
+      if (!currentCell.visited && positionEqual(currentPosition, {x: this.width-1, y: this.height-1, z: 0})) ++this.corners;
+      if (!currentCell.visited && positionEqual(currentPosition, {x: 0, y: 0, z: this.depth-1})) ++this.corners;
+      if (!currentCell.visited && positionEqual(currentPosition, {x: this.width-1, y: 0, z: this.depth-1})) ++this.corners;
+      if (!currentCell.visited && positionEqual(currentPosition, {x: 0, y: this.height-1, z: this.depth-1})) ++this.corners;
+      if (!currentCell.visited && positionEqual(currentPosition, {x: this.width-1, y: this.height-1, z: this.depth-1})) ++this.corners;
+      if (this.corners == 8) this.allCorners = true;
+
       currentCell.visited = true;
       currentCellX.visited = true;
       currentCellY.visited = true;
@@ -117,6 +131,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
             currentPosition = unvisited;
             this.unconnected++;
             this.links = 0;
+            this.corners = 0;
           } else return null;
         } else {
           currentPosition = currentCell.parent;
