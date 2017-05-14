@@ -94,7 +94,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
 
   App.prototype._update = function() {
-    var maxDim = this.width > this.height ? (this.width > this.depth ? this.width : this.depth) : (this.height > this.depth ? this.height : this.depth);
+    var maxDim = this.maze.width > this.maze.height ? (this.maze.width > this.maze.depth ? this.maze.width : this.maze.depth) : (this.maze.height > this.maze.depth ? this.maze.height : this.maze.depth);
     var scale = 10.0 / maxDim;
 
     this.maze.render(this.scene, this.renderer, scale);
@@ -102,6 +102,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
     $('.components').text(this.maze.unconnected);
     $('.largest').text(this.maze.largest + ' / ' + this.maze.ncells);
+    $('.links').text(this.maze.links + ' / ' + this.maze.ncells);
   };
 
 
@@ -136,7 +137,9 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
       this.pointer.name = 'pointer';
       this.scene.add(this.pointer);
     }
-    this.pointer.position.set(this.pointerPosition.x-this.width/2+0.5, this.pointerPosition.y-this.height/2+0.5, this.pointerPosition.z-this.depth/2+0.5);
+    var maxDim = this.maze.width > this.maze.height ? (this.maze.width > this.maze.depth ? this.maze.width : this.maze.depth) : (this.maze.height > this.maze.depth ? this.maze.height : this.maze.depth);
+    var scale = 10.0 / maxDim;
+    this.pointer.position.set(scale*(this.pointerPosition.x-this.maze.width/2+0.5), scale*(this.pointerPosition.y-this.maze.height/2+0.5), scale*(this.pointerPosition.z-this.maze.depth/2+0.5));
     this._update();
   };
 

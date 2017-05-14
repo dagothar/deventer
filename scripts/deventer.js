@@ -27,6 +27,11 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
   };
 
 
+  var positionEqual = function(pos1, pos2) {
+    return (pos1.x == pos2.x && pos1.y == pos2.y && pos1.z == pos2.z);
+  };
+
+
   function Connection(position) {
     this.x = position.x;
     this.y = position.y;
@@ -145,7 +150,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     var cell = maze.get(pos1.x, pos1.y, pos1.z);
     for (var i = 0, n = cell.connections.length; i < n; ++i) {
       var conn = cell.connections[i];
-      if (conn.x == pos2.x && conn.y == pos2.y && conn.z == pos2.z) return true;
+      if (positionEqual(pos2, conn)) return true;
     }
 
     return false;
