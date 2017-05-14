@@ -45,7 +45,7 @@
 
             <!-- animate switch button -->
             <div class="form-group col-md-6">
-              <button type="button" id="button-animate" class="btn btn-default btn-block">Animate OFF</button>
+              <button type="button" id="button-animate" class="btn btn-default btn-block">Animate: ON</button>
             </div>
 
             <!-- maze dimensions -->
@@ -62,6 +62,11 @@
               <input type="number" id="depth" value="10"/>
             </div>
 
+            <div class="form-group col-md-12">
+              <label>Speed:</label><span class="speed pull-right">0</span>
+              <input type="range" min="0" value="100" max="100" id="slider-speed"/>
+            </div>
+
           </div>
         </div>
 
@@ -70,6 +75,7 @@
           <div class="panel-body">
             <p>Are all corners connected? <span class="connected pull-right">No</span></p>
             <p>Unconnected components: <span class="components text-info pull-right">1</span></p>
+            <p>Largest component: <span class="largest text-success pull-right">0 </span></p>
           </div>
         </div>
 

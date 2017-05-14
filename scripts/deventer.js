@@ -39,9 +39,12 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     this.width = width;
     this.height = height;
     this.depth = depth;
+    this.ncells = this.width * this.height * this.depth;
 
     this.unvisited = this.width * this.depth * this.height;
     this.unconnected = 1;
+    this.links = 0;
+    this.largest = 0;
 
     this.maze = makeMaze(width, height, depth);
     this.xmaze = makeMaze(1, height, depth);
@@ -81,6 +84,8 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
         nextCell.connections.push(currentPosition);
         currentCell.visited = true;
         --this.unvisited;
+        ++this.links;
+        if (this.links > this.largest) this.largest = this.links;
 
         /* connect 2d cells */
         var nextCellX = this.xmaze.get(0, nextPosition.y, nextPosition.z);
@@ -106,6 +111,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
           if (unvisited) {
             currentPosition = unvisited;
             this.unconnected++;
+            this.links = 0;
           } else return null;
         } else {
           currentPosition = currentCell.parent;
@@ -224,7 +230,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     var scale = scale || 1.0;
     var sideOffset = 6.0 || sideOffset;
 
-    this.renderMaze(scene, this.maze, -dx, -dy, -dz, scale, '#f0f0f0');
+    this.renderMaze(scene, this.maze, -dx, -dy, -dz, scale, '#eeeeee');
     this.renderMaze(scene, this.xmaze, -sideOffset, -dy, -dz, scale, '#ff0000', 2);
     this.renderMaze(scene, this.ymaze, -dx, -sideOffset, -dz, scale, '#00ff00', 2);
     this.renderMaze(scene, this.zmaze, -dx, -dy, -sideOffset, scale, '#0000ff', 2);

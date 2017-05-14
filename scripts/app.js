@@ -16,6 +16,8 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     HEIGHT_ID: '#height',
     DEPTH_ID: '#depth',
     ANIMATE_ID: '#button-animate',
+    SPEED_ID: '.speed',
+    SPEED_SLIDER_ID: '#slider-speed',
   };
 
 
@@ -26,9 +28,13 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.maze = new deventer.Deventer(this.width, this.height, this.depth);
     this.lastPos = {x: CONFIG.START_X, y: CONFIG.START_Y, z: CONFIG.START_Z};
 
-    this.animate = false;
+    this.animate = true;
     this.animateInt = undefined;
     this.speed = 10;
+    this.generateSteps = 1;
+
+    this.pointer = null;
+    this.pointerPosition = this.lastPos;
   };
 
 
@@ -64,11 +70,26 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     $(CONFIG.GENERATE_ID).click(function() { self._generateMaze(); });
     $(CONFIG.ANIMATE_ID).click(function() {
       self.animate ^= true;
+      if (self.animate) {
+        self.generateSteps = 1;
+      } else {
+        self.generateSteps = undefined;
+      }
       $(this).text('Animate: ' + (self.animate ? 'ON' : 'OFF'));
     });
     $(CONFIG.WIDTH_ID).on('input change', function() { self.width = $(this).val(); });
     $(CONFIG.HEIGHT_ID).on('input change', function() { self.height = $(this).val(); });
     $(CONFIG.DEPTH_ID).on('input change', function() { self.depth = $(this).val(); });
+    $(CONFIG.SPEED_ID).text(this.speed.toFixed(1) + ' [ms]');
+    $(CONFIG.SPEED_SLIDER_ID).on('input change', function() {
+      var val = parseInt($(this).val());
+      self.speed = 1000 * Math.pow(1.047129, -val);
+      $(CONFIG.SPEED_ID).text(self.speed.toFixed(1) + ' [ms]');
+      if (self.animateInt) {
+        clearInterval(self.animateInt);
+        self.animateInt = setInterval(function() { self._generateStep(); }, self.speed);
+      }
+    });
   };
 
 
@@ -78,6 +99,9 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
     this.maze.render(this.scene, this.renderer, scale);
     this._render();
+
+    $('.components').text(this.maze.unconnected);
+    $('.largest').text(this.maze.largest + ' / ' + this.maze.ncells);
   };
 
 
@@ -95,12 +119,24 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
 
 
   App.prototype._generateStep = function() {
-    this.lastPos = this.maze.rebuild(this.lastPos, 1);
+    console.log(this.generateSteps);
+    this.lastPos = this.maze.rebuild(this.lastPos, this.generateSteps);
     if (this.lastPos == null) {
       clearInterval(this.animateInt);
+      this.scene.remove(this.scene.getObjectByName('pointer'));
+      this.pointer = null;
       this._update();
       return;
     }
+    this.pointerPosition = this.lastPos;
+    if (this.pointer == null) {
+      var geometry = new THREE.SphereGeometry(0.1, 32, 32);
+      var material = new THREE.MeshBasicMaterial({color: 0x000000});
+      this.pointer = new THREE.Mesh(geometry, material);
+      this.pointer.name = 'pointer';
+      this.scene.add(this.pointer);
+    }
+    this.pointer.position.set(this.pointerPosition.x-this.width/2+0.5, this.pointerPosition.y-this.height/2+0.5, this.pointerPosition.z-this.depth/2+0.5);
     this._update();
   };
 
@@ -109,6 +145,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     while (this.scene.children.length) {
      this.scene.remove(this.scene.children[0]);
     }
+    this.pointer = null;
 
     var self = this;
     clearInterval(this._moveModeInt);
