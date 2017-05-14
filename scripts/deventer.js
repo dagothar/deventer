@@ -32,6 +32,9 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     this.height = height;
     this.depth = depth;
 
+    this.unvisited = this.width * this.depth * this.height;
+    this.unconnected = 1;
+
     this.maze = makeMaze(width, height, depth);
     this.xmaze = makeMaze(1, height, depth);
     this.ymaze = makeMaze(width, 1, depth);
@@ -69,6 +72,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
         currentCell.connections.push(nextPosition);
         nextCell.connections.push(currentPosition);
         currentCell.visited = true;
+        --this.unvisited;
 
         /* connect 2d cells */
         var nextCellX = this.xmaze.get(0, nextPosition.y, nextPosition.z);
@@ -90,10 +94,15 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
         currentCell = nextCell;
       } else {
         if (currentCell.parent === null) {
-          break; // todo
+          if (this.unvisited > 0) {
+            console.log(this.unvisited);
+            currentPosition = this.findUnvisited();
+            console.log(currentPosition);
+            if (currentPosition === null) break;
+            this.unconnected++;
+          } else break;
         } else {
           currentPosition = currentCell.parent;
-          currentCell = this.maze.get(currentPosition.x, currentPosition.y, currentPosition.z);
         }
       }
 
@@ -101,6 +110,22 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     }
 
     return currentPosition;
+  };
+
+
+  Deventer.prototype.findUnvisited = function() {
+    var unvisited = null;
+
+    for (var x = 0; x < this.width; ++x) {
+      for (var y = 0; y < this.height; ++y) {
+        for (var z = 0; z < this.depth; ++z) {
+          var cell = this.maze.get(x, y, z);
+          if (!cell.visited) return cell.position;
+        }
+      }
+    }
+
+    return unvisited;
   };
 
 
@@ -162,8 +187,6 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     var scale = scale || 1.0;
     var color = color || '#000000';
     var weight = weight || 1;
-
-    console.log(color);
 
     var material = new THREE.LineBasicMaterial({ color: color, linewidth: weight });
 

@@ -91,7 +91,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
   App.prototype._generateMaze = function() {
     this.maze = new deventer.Deventer(this.width, this.height, this.depth);
     this.lastPos = {x: 0, y: 0, z: 0};
-    this.lastPos = this.maze.rebuild(this.lastPos, 1000);
+    this.lastPos = this.maze.rebuild(this.lastPos);
     this._update();
   };
 
