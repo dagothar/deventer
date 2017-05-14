@@ -100,7 +100,7 @@ define(['jquery', 'deventer', 'threejs', 'orbit', 'axes', 'grid'], function($, d
     this.maze.render(this.scene, this.renderer, scale);
     this._render();
 
-    $('.connected').text(this.maze.allCorners ? 'YES' : 'NO');
+    $('.connected').text((this.maze.allCorners ? 'YES' : 'NO') + ' / ' + this.maze.maxCorners);
     $('.components').text(this.maze.unconnected);
     $('.largest').text(this.maze.largest + ' / ' + this.maze.ncells);
     $('.links').text(this.maze.links + ' / ' + this.maze.ncells);

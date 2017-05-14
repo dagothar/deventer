@@ -51,6 +51,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
     this.links = 0;
     this.largest = 0;
     this.corners = 0;
+    this.maxCorners = 0;
     this.allCorners = false;
 
     this.maze = makeMaze(width, height, depth);
@@ -86,6 +87,7 @@ define(['array3d', 'threejs'], function(array3d, THREE) {
       if (!currentCell.visited && positionEqual(currentPosition, {x: 0, y: this.height-1, z: this.depth-1})) ++this.corners;
       if (!currentCell.visited && positionEqual(currentPosition, {x: this.width-1, y: this.height-1, z: this.depth-1})) ++this.corners;
       if (this.corners == 8) this.allCorners = true;
+      if (this.corners > this.maxCorners) this.maxCorners = this.corners;
 
       currentCell.visited = true;
       currentCellX.visited = true;
